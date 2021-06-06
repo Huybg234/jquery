@@ -2,6 +2,7 @@ $(document).ready(function () {
     let id = 1;
     let list = [];
     let isEdit = false;
+    let index = -1
 
     $("#save-button").click(function () {
         var no = id;
@@ -15,18 +16,22 @@ $(document).ready(function () {
         }
 
         if (isEdit) {
-            $('table').on('click', '.edit', function () {
-                $(this).parents('tr').editElement(); // TODO -wrong logic
-            });
+            doUpdateInfo(name, address, phoneNumber, className);
+            $("#name").val(name);
+            $("#address").val(address);
+            $("#phoneNumber").val(phoneNumber);
+            $("#className").val(className);
+            isEdit = false;
+            return;
         }
 
-        $("#table-data").append("<tr>" +
+        $("#table-data").append("<tr id='" + id + "'>" +
             "<td><button type='button' class='delete'>Delete</button><button type='button' class='edit'>Edit</button></td>" +
-            "<td>" + no + "</td>" +
+            "<td class='no'>" + no + "</td>" +
             "<td class='name'>" + name + "</td>" +
-            "<td>" + address + "</td>" +
-            "<td>" + phoneNumber + "</td>" +
-            "<td>" + className + "</td>" +
+            "<td class='address'>" + address + "</td>" +
+            "<td class='phoneNumber'>" + phoneNumber + "</td>" +
+            "<td class='className'>" + className + "</td>" +
             "</tr>");
         var ob = { no, name, address, phoneNumber, className };
         list.push(ob);
@@ -39,18 +44,35 @@ $(document).ready(function () {
     });
 
     $('table').on('click', '.edit', function () {
+        const no = $(this).parents('tr').children('.no').text();
+        index = searchIndexById(no);
+        console.log(index);
         const name = $(this).parents('tr').children('.name').text();
-        console.log(name);
-        // TODO - complete edit
+        const address = $(this).parents('tr').children('.address').text();
+        const phoneNumber = $(this).parents('tr').children('.phoneNumber').text();
+        const className = $(this).parents('tr').children('.className').text();
+
+        document.getElementById('name').value = name;
+        document.getElementById('address').value = address;
+        document.getElementById('phoneNumber').value = phoneNumber;
+        document.getElementById('className').value = className;
+
+        isEdit = true;
     });
 
-    function editElement() {
-        document.getElementById('name').value = list[no].name;
-        document.getElementById('address').value = list[no].address;
-        document.getElementById('phoneNumber').value = list[no].phoneNumber;
-        document.getElementById('className').value = list[no].className;
-        isEdit = true;
-        doUpdateInfo(name, address, phoneNumber, className)
+    function searchIndexById(tmp) {
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].no == tmp) return i;
+        }
+        return -1;
+    }
+
+    function doUpdateInfo(name, address, phoneNumber, className) {
+        list[index].name = name;
+        list[index].address = address;
+        list[index].phoneNumber = phoneNumber;
+        list[index].className = className;
+        index = -1;
     }
 
     function clearForm() {
@@ -58,12 +80,5 @@ $(document).ready(function () {
         document.getElementById("address").value = "";
         document.getElementById("phoneNumber").value = "";
         document.getElementById("className").value = "";
-    }
-
-    function doUpdateInfo(name, address, phoneNumber, className) {
-        list[no].name = name;
-        list[no].address = address;
-        list[no].phoneNumber = phoneNumber;
-        list[no].className = className;
     }
 });
